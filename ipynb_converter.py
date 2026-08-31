@@ -5,7 +5,8 @@ from pathlib import Path
 
 def convert_ipynb_to_py(ipynb_path, output_path=None):
     #####
-    #Converts a Jupyter notebook (.ipynb) to a Python script (.py).
+    #Converts a Jupyter notebook (.ipynb) to a Python script (.py). Comments out main function 
+    ##calls and puts in a main function to run. 
     #####
     # Args:
     # ipynb_path (str): Path to the input .ipynb file
@@ -44,6 +45,19 @@ def convert_ipynb_to_py(ipynb_path, output_path=None):
         f.writelines(code_lines)
     
     print(f"Successfully converted: {ipynb_path} -> {output_path}")
+
+    #Print function names and start/end lines
+    current_func = None
+    start_line = 0
+    for idx, line in enumerate(code_lines, start=1):
+        stripped = line.strip()
+        if stripped.startswith('def '):
+            if current_func:
+                print(f"Function '{current_func}': lines {start_line} to {idx - 1}")
+            current_func = stripped.split('(')[0].replace('def ', '')
+            start_line = idx
+    if current_func:
+        print(f"Function '{current_func}': lines {start_line} to {len(code_lines)}")
 
 
 if __name__ == '__main__':
